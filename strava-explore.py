@@ -14,4 +14,13 @@ client_secret = os.environ.get('STRAVA_CLIENT_SECRET', None)
 access_token = os.environ.get('STRAVA_ACCESS_TOKEN', None)
 
 if __name__ == '__main__':
-    pass
+
+    client = Client(access_token)
+    athlete = client.get_athlete()
+    friends = athlete.friends
+    for x in friends:
+        print(x)
+
+    activities = client.get_activities(limit=1)
+    for x in activities:
+        print(x)
