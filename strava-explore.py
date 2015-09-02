@@ -15,12 +15,28 @@ access_token = os.environ.get('STRAVA_ACCESS_TOKEN', None)
 
 if __name__ == '__main__':
 
+    # get athlete
     client = Client(access_token)
     athlete = client.get_athlete()
-    friends = athlete.friends
-    for x in friends:
-        print(x)
 
-    activities = client.get_activities(limit=1)
-    for x in activities:
-        print(x)
+    # get athlete friends
+    friends = athlete.friends
+    for friend in friends:
+        print(friend)
+
+    # get athlete activities
+    activity = client.get_activity(378663608)
+
+    # per activity, get segment efforts
+    # for activity in activities:
+    print(activity)
+    import pdb; pdb.set_trace()
+    segments = activity.segment_efforts
+
+    # per segment
+    for segment in segments:
+        print(segment)
+
+        # check if segment is already tracked
+        # check if segment leaderboard contains any friends
+            # get friend with time < athlete time
