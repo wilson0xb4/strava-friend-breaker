@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h3 class="panel-title">Challenged Segments</h3></div>
+  <div class="panel-body">
+    <p>Segments you need to try harder on.</p>
+  </div>
+
+  <!-- Table -->
+  <table class="table">
+    <thead><tr><th>Segment Name</th><th>Challenger</th><th>Time Behind</th><th>My Time</th><th>Their Time</th><th>Segment Distance</th></tr></thead>
+    <tbody>
+    <tr><td>all the data</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h3 class="panel-title">Segments</h3></div>
+  <div class="panel-body">
+    <p>All segments you've ridden that have been analyzed.</p>
+  </div>
+
+  <!-- Table -->
+  <table class="table">
+    <thead><tr><th>Segment Name</th><th>Most Recent Attempt</th></tr></thead>
+    <tbody><tr><td>all the data</td></tr></tbody>
+  </table>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Activities</h3>
+  </div>
+
+  <div class="panel-body">
+    <p>All of your activities that have been analyzed.</p>
+  </div>
+
+  <!-- Table -->
+  <table class="table">
+    <thead><tr><th>Activity Name</th><th>Date Ridden</th><th>Distance</th></tr></thead>
+    <tbody><tr><td>all the data</td><td></td><td></td></tr></tbody>
+  </table>
+</div>
+
+{% endblock %}
