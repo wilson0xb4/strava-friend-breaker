@@ -20,15 +20,15 @@ if __name__ == '__main__':
     mysegments = {}
 
     # get athlete
-    client = Client(access_token)
-    athlete = client.get_athlete()
+    client = Client(access_token)  # 1 -- possibly not counted
+    athlete = client.get_athlete()  # 2
 
     # get athlete activities
-    activities = client.get_activities(limit=1)
+    activities = client.get_activities(limit=1)  # 3
 
     # per activity, get segment efforts
     for activity in activities:
-        segment_efforts = client.get_activity(activity.id).segment_efforts
+        segment_efforts = client.get_activity(activity.id).segment_efforts  # 4
 
         # per segment effort
         for segment in segment_efforts:
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     # check if segment leaderboard contains any friends
     for key, segment in mysegments.iteritems():
-        leaderboard = client.get_segment_leaderboard(key, following=True).entries
+        leaderboard = client.get_segment_leaderboard(key, following=True).entries  # 12
 
         # get friend with time < athlete time
         for person in leaderboard:
