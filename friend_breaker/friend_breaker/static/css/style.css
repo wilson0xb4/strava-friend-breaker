@@ -1,1 +1,13 @@
-/* no custom css yet */
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.strava_connect {
+    padding-top: 9px;
+}
