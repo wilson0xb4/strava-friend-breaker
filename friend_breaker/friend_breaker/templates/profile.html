@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1>Strava Friend Breaker</h1>
+    <p>eventually put user profile or maybe a dashboard here?</p>
+    <p>For now, here is a link to your <a href="https://www.strava.com/athletes/{{ request.session.athlete_id }}">Strava profile</a>!</p>
+</div>
+{% endblock %}

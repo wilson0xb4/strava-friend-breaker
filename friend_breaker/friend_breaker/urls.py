@@ -24,7 +24,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^$', views.index_view, name="index"),
-    url(r'^authorization/', views.authorization_view, name="authorization"),
+    url(r'^about/', views.about, name="about"),
+    url(r'^profile/', views.profile, name="profile"),
+
+    url(r'^authorization/', views.authorization, name="authorization"),
+    url(r'^logout/', views.logout, name="logout"),
 ]
 
 if settings.DEBUG:
