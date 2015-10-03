@@ -4,8 +4,6 @@
 
 {% block content %}
 
-{{ athlete }}
-
 <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading"><h3 class="panel-title">Challenged Segments</h3></div>
@@ -13,6 +11,8 @@
     {% if not segments %}
     <p>Looks like you are already the fastest of your friends!</p>
     <p>There are no segments to display.</p>
+    <br><br>
+    <p><strong>or maybe its a bug, and you should refresh the page....</strong></p>
     </div>
     {% else %}
     <p>Segments you need to try harder on.</p>
@@ -27,8 +27,8 @@
         <td><a href="https://www.strava.com/segments/{{ v.segment_id }}?filter=following">{{ v.segment_name }}</a></td>
         <td>{{ v.challenger_name|truncatewords:3 }}</td>
         <td>{{ v.time_difference }}</td>
-        <td>{{ v.their_elapsed_time }}</td>
-        <td>{{ v.my_elapsed_time }}</td>
+        <td><a href="https://www.strava.com/activities/{{ v.their_pr_id }}">{{ v.their_elapsed_time }}</a></td>
+        <td><a href="https://www.strava.com/activities/{{ v.my_pr_id }}">{{ v.my_elapsed_time }}</a></td>
         <td>{{ v.distance }}</td>
       </tr>
     {% endfor %}

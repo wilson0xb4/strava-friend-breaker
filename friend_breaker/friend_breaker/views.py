@@ -16,7 +16,7 @@ def index_view(request):
             client_id=os.environ.get('STRAVA_CLIENT_ID', None),
             redirect_uri='http://127.0.0.1:8000/authorization'
         )
-        context = {'auth_url': url, 'access_token': access_token}
+        context = {'auth_url': url}
         return render(request, 'index.html', context)
 
     # otherwise, load authorized user
@@ -75,6 +75,8 @@ def _build_context(client, athlete_id):
                     segments[segment.name]['segment_id'] = segment.id
                     segments[segment.name]['challenger_name'] = other.athlete_name
                     segments[segment.name]['challenger_id'] = other.athlete_id
+                    segments[segment.name]['my_pr_id'] = me.activity_id
+                    segments[segment.name]['their_pr_id'] = other.activity_id
                     segments[segment.name]['my_elapsed_time'] = str(me.elapsed_time)
                     segments[segment.name]['their_elapsed_time'] = str(other.elapsed_time)
                     segments[segment.name]['time_difference'] = str(me.elapsed_time - other.elapsed_time)
