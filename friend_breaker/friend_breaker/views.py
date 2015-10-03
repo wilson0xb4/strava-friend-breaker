@@ -1,6 +1,10 @@
+from __future__ import unicode_literals
+from __future__ import print_function
 import os
+
 from django.shortcuts import render, redirect
 from stravalib import Client
+from stravalib import unithelper
 
 
 def index_view(request):
@@ -16,15 +20,69 @@ def index_view(request):
         return render(request, 'index.html', context)
 
     # otherwise, load authorized user
-    athlete = request.session.get('athlete', None)
-    if athlete is None:
-        # if athlete is NOT already set, get athlete (attempting to reduce calls to the API)
-        client = Client(access_token=access_token)
+    client = Client(access_token=access_token)
+
+    athlete_id = request.session.get('athlete_id', None)
+    if athlete_id is None:
+        # if athlete is NOT already in session, get athlete
+        # (attempting to reduce calls to the API)
         athlete = client.get_athlete()
         request.session['athlete_id'] = athlete.id
         request.session['firstname'] = athlete.firstname
 
-    return render(request, 'index_loggedin.html')
+    # where the magic happens?
+    context = _build_context(client, athlete_id)
+
+    return render(request, 'index_loggedin.html', context)
+
+
+def _build_context(client, athlete_id):
+    context = {}
+    segments = {}  # segments with with a faster friend
+    mysegments = {}  # all segments a user has ridden
+
+    # get athlete activities
+    activities = client.get_activities(limit=1)  # API call
+
+    # per activity, get segment efforts
+    for activity in activities:
+        segment_efforts = client.get_activity(activity.id).segment_efforts   # API call
+
+        # per segment effort
+        for segment in segment_efforts:
+            mysegments[segment.segment.id] = segment.segment  # save to db
+
+    count = 0  # for testing, limit segments
+
+    # check if segment leaderboard contains any friends
+    for key, segment in mysegments.iteritems():
+        leaderboard = client.get_segment_leaderboard(key, following=True).entries   # API call (possibly lots, depends on number of segments)
+
+        # limit the segments while testing
+        count += 1
+        if count > 10:
+            break
+
+        # get friend with time < athlete time
+        for entry in leaderboard:
+            if entry.athlete_id == athlete_id:
+                me = entry
+                index = leaderboard.index(me)
+                if index > 0:
+                    other = leaderboard[index - 1]
+                    segments[segment.name] = {}
+                    segments[segment.name]['segment_name'] = segment.name
+                    segments[segment.name]['segment_id'] = segment.id
+                    segments[segment.name]['challenger_name'] = other.athlete_name
+                    segments[segment.name]['challenger_id'] = other.athlete_id
+                    segments[segment.name]['my_elapsed_time'] = str(me.elapsed_time)
+                    segments[segment.name]['their_elapsed_time'] = str(other.elapsed_time)
+                    segments[segment.name]['time_difference'] = str(me.elapsed_time - other.elapsed_time)
+                    segments[segment.name]['distance'] = str(unithelper.miles(segment.distance))
+
+    context['segments'] = segments
+    context['all_segments'] = mysegments
+    return context
 
 
 def authorization(request):

@@ -10,18 +10,34 @@
   <!-- Default panel contents -->
   <div class="panel-heading"><h3 class="panel-title">Challenged Segments</h3></div>
   <div class="panel-body">
+    {% if not segments %}
+    <p>Looks like you are already the fastest of your friends!</p>
+    <p>There are no segments to display.</p>
+    </div>
+    {% else %}
     <p>Segments you need to try harder on.</p>
   </div>
 
   <!-- Table -->
   <table class="table">
-    <thead><tr><th>Segment Name</th><th>Challenger</th><th>Time Behind</th><th>My Time</th><th>Their Time</th><th>Segment Distance</th></tr></thead>
+    <thead><tr><th>Segment Name</th><th>Challenger</th><th>Time Behind</th><th>Their Time</th><th>My Time</th><th>Segment Distance</th></tr></thead>
     <tbody>
-    <tr><td>all the data</td></tr>
+    {% for k, v in segments.items %}
+      <tr>
+        <td><a href="https://www.strava.com/segments/{{ v.segment_id }}?filter=following">{{ v.segment_name }}</a></td>
+        <td>{{ v.challenger_name|truncatewords:3 }}</td>
+        <td>{{ v.time_difference }}</td>
+        <td>{{ v.their_elapsed_time }}</td>
+        <td>{{ v.my_elapsed_time }}</td>
+        <td>{{ v.distance }}</td>
+      </tr>
+    {% endfor %}
     </tbody>
   </table>
+  {% endif %}
 </div>
 
+{% comment "not using yet" %}
 <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading"><h3 class="panel-title">Segments</h3></div>
@@ -51,5 +67,6 @@
     <tbody><tr><td>all the data</td><td></td><td></td></tr></tbody>
   </table>
 </div>
+{% endcomment %}
 
 {% endblock %}
