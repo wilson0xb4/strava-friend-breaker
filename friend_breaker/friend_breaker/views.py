@@ -73,14 +73,14 @@ def _build_context(client, athlete_id):
                     break
 
                 j = 1
-                other = leaderboard[i - j]
-                while other.elapsed_time == me.elapsed_time and j <= i:
+                while j <= i and leaderboard[i - j].elapsed_time == me.elapsed_time:
                     # check for ties, compare each entry from i to zero (possibly)
                     j += 1
-                    other = leaderboard[i - j]
-                if other.elapsed_time == me.elapsed_time:
+                if leaderboard[i - j].elapsed_time == me.elapsed_time:
                     # if they're still tied at the end of the loop, I don't want to see it
                     break
+
+                other = leaderboard[i - j]
 
                 segments[segment.name] = {}
                 segments[segment.name]['segment_name'] = segment.name
@@ -96,7 +96,6 @@ def _build_context(client, athlete_id):
                 break  # we already found my entry, why keep looking through the list?
 
     context['segments'] = segments
-    context['all_segments'] = mysegments
     return context
 
 
