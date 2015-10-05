@@ -24,7 +24,8 @@ if __name__ == '__main__':
     athlete = client.get_athlete()  # 2
 
     # get athlete activities
-    activities = client.get_activities(limit=1)  # 3
+    activities = client.get_activities(limit=200)  # 3
+    print("number of activities returned", str(len(list(activities))))
 
     # per activity, get segment efforts
     for activity in activities:
