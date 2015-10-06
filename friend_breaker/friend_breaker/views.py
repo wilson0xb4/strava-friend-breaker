@@ -124,6 +124,7 @@ def logout(request):
 
 
 def about(request):
+    # TODO: handle logged in and not logged in users
     return render(request, 'about.html')
 
 

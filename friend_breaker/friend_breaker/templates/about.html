@@ -5,6 +5,20 @@
 {% block content %}
 <div class="jumbotron">
     <h1>Strava Friend Breaker</h1>
-    <p>description of project features</p>
+    <p>
+        Friend Breaker (SFB) takes the competitiveness of Strava to a
+        whole new level. SFB leverages the Strava API to analyze every
+        segment you've ridden and looks for the segments where one of your
+        friends is currently ranked ahead of you. Knowing how you rank
+        among your friends allows you to target your efforts and identifies
+        which segments you need to attack!
+    </p>
+    <p>Because we all want to be better than our friends...</p>
+
+    {% if not request.session.access_token %}
+    <p><a href="{{ auth_url }}">
+        <img class='strava_connect' src="{% static 'images/ConnectWithStrava@2x.png' %}" alt="Connect with Strava">
+    </a></p>
+    {% endif %}
 </div>
 {% endblock %}
