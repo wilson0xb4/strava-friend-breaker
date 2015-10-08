@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Athlete(models.Model):
+    # should i save this? or just keep in session....
+    # access_token = models.CharField(max_length=40)
     strava_id = models.IntegerField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -44,7 +46,5 @@ class ChallenegedSegments(models.Model):
     difference = models.CharField(max_length=8)
 
     segment_id = models.IntegerField()
-    segment_name = models.CharField(max_length=100)
+    segment_name = models.CharField(max_length=200)
     segment_distance = models.CharField(max_length=10)
-
-

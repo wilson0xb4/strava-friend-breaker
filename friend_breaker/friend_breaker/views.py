@@ -112,7 +112,6 @@ def authorization(request):
         client_secret=os.environ.get('STRAVA_CLIENT_SECRET', None),
         code=code
     )
-
     request.session['access_token'] = access_token
 
     return redirect(index_view)
