@@ -6,8 +6,10 @@ from django.shortcuts import render, redirect
 from stravalib import Client
 from stravalib import unithelper
 
+from models import Athlete, ChallengedSegment
 
-def index_view(request):
+
+def index(request):
     access_token = request.session.get('access_token', None)
     if access_token is None:
         # if access_token is NOT in session, kickoff the oauth exchange
@@ -30,10 +32,17 @@ def index_view(request):
         request.session['athlete_id'] = athlete.id
         request.session['firstname'] = athlete.firstname
 
-    # where the magic happens?
-    context = _build_context(client, athlete_id)
+        # start saving to a db!
+        new_athlete = Athlete()
+        new_athlete.strava_id = athlete.id
+        new_athlete.first_name = athlete.firstname
+        new_athlete.last_name = athlete.lastname
+        new_athlete.city = athlete.city
+        new_athlete.state = athlete.state
+        new_athlete.country = athlete.country
+        new_athlete.save()
 
-    return render(request, 'index_loggedin.html', context)
+    return render(request, 'welcome_landing.html')
 
 
 def _build_context(client, athlete_id):
@@ -93,10 +102,54 @@ def _build_context(client, athlete_id):
                 segments[segment.name]['their_elapsed_time'] = str(other.elapsed_time)
                 segments[segment.name]['time_difference'] = str(me.elapsed_time - other.elapsed_time)
                 segments[segment.name]['distance'] = str(unithelper.miles(segment.distance))
+
+                # start saving to db instead
+                new_segment = ChallengedSegment()
+                new_segment.my_id = athlete_id
+                new_segment.their_id = other.athlete_id
+                new_segment.their_name = other.athlete_name
+
+                new_segment.my_pr = me.activity_id
+                new_segment.their_pr = other.activity_id
+
+                new_segment.my_time = str(me.elapsed_time)
+                new_segment.their_time = str(other.elapsed_time)
+                new_segment.difference = str(me.elapsed_time - other.elapsed_time)
+
+                new_segment.segment_id = segment.id
+                new_segment.segment_name = segment.name
+                new_segment.segment_distance = str(unithelper.miles(segment.distance))
+                new_segment.save()
+
                 break  # we already found my entry, why keep looking through the list?
 
     context['segments'] = segments
     return context
+
+
+def update(request):
+    '''
+    Kickoff the update process!
+
+    Initially:
+        grab most recent ride and look at those segments.
+    Eventually...
+        Starts the background process that will analyze every ride and
+        every segment a user has ridden.
+    '''
+
+    # check that I have both an `access_token` and an `athlete_id`
+    # essentially, "is the user logged in"
+    if not request.session.get('access_token', False) and request.session.get('athlete_id', False):
+        # could redirect 401 or 403 instead...but just put them at the home page
+        return redirect(index)
+
+    client = Client(access_token=request.session.get('access_token', None))
+    athlete_id = request.session.get('athlete_id', None)
+
+    context = _build_context(client, athlete_id)
+
+    return render(request, 'index_loggedin.html', context)
 
 
 def authorization(request):
@@ -114,12 +167,12 @@ def authorization(request):
     )
     request.session['access_token'] = access_token
 
-    return redirect(index_view)
+    return redirect(index)
 
 
 def logout(request):
     request.session.flush()
-    return redirect(index_view)
+    return redirect(index)
 
 
 def about(request):

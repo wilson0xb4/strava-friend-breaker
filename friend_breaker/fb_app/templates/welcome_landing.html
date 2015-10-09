@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1>Strava Friend Breaker</h1>
+
+    <h3>Welcome {{ request.session.firstname }}!</h3>
+    <p>
+        Click <a href="{% url 'update' %}">update</a> to load some data!
+    </p>
+</div>
+{% endblock %}

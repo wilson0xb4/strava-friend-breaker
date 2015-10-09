@@ -12,19 +12,19 @@ class Athlete(models.Model):
     country = models.CharField(max_length=50)
 
     # strava time strings
-    newest_activity_date = models.CharField(max_length=20)
-    oldest_activity_date = models.CharField(max_length=20)
+    newest_activity_date = models.CharField(max_length=20, blank=True, null=True)
+    oldest_activity_date = models.CharField(max_length=20, blank=True, null=True)
 
 
 # future ideas
 #
-# class Activity(models.Model):
-#     strava_id = models.IntegerField(primary_key=True)
-#     name = models.CharField(max_length=200)
-#     distance
-#     start_latlng
-#     end_latlng
-#     average_speed
+class Activity(models.Model):
+    strava_id = models.IntegerField(primary_key=True)
+    # name = models.CharField(max_length=200)
+    # distance = models.CharField(max_length=10)
+    # start_latlng
+    # end_latlng
+    # average_speed
 # class Segment(models.Model):
 #     strava_id = models.IntegerField(primary_key=True)
 #     name = models.CharField(max_length=50)
@@ -33,7 +33,11 @@ class Athlete(models.Model):
 #     distance
 
 
-class ChallenegedSegments(models.Model):
+class ChallengedSegment(models.Model):
+
+    class Meta:
+        unique_together = ("my_id", "segment_id")
+
     my_id = models.IntegerField()
     their_id = models.IntegerField()
     their_name = models.CharField(max_length=50)

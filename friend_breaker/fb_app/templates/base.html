@@ -29,6 +29,7 @@
             <ul class="nav navbar-nav navbar-right">
 
               {% if request.session.access_token %}
+              <li><a href="{% url 'update' %}">Update</a></li>
               <li><a href="{% url 'profile' %}">{{ request.session.firstname }}</a></li>
               <li><a href="{% url 'logout' %}">Logout</a></li>
               {% else %}

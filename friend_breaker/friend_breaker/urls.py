@@ -17,18 +17,20 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-import views
+from fb_app.views import index, about, profile, update, authorization, logout
 
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^$', views.index_view, name="index"),
-    url(r'^about/', views.about, name="about"),
-    url(r'^profile/', views.profile, name="profile"),
+    url(r'^$', index, name="index"),
+    url(r'^about/', about, name="about"),
+    url(r'^profile/', profile, name="profile"),
 
-    url(r'^authorization/', views.authorization, name="authorization"),
-    url(r'^logout/', views.logout, name="logout"),
+    url(r'^update/', update, name="update"),
+
+    url(r'^authorization/', authorization, name="authorization"),
+    url(r'^logout/', logout, name="logout"),
 ]
 
 if settings.DEBUG:
