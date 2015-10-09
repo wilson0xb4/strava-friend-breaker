@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from fb_app.views import index, about, profile, update, authorization, logout
+from fb_app.views import index, about, profile, update, authorization, logout, challenged_segments
 
 
 urlpatterns = [
@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^$', index, name="index"),
     url(r'^about/', about, name="about"),
     url(r'^profile/', profile, name="profile"),
-
+    url(r'^cs/(?P<athlete>\d+)/$', challenged_segments, name="cr"),
     url(r'^update/', update, name="update"),
 
     url(r'^authorization/', authorization, name="authorization"),

@@ -22,14 +22,14 @@
   <table class="table">
     <thead><tr><th>Segment Name</th><th>Challenger</th><th>Time Behind</th><th>Their Time</th><th>My Time</th><th>Segment Distance</th></tr></thead>
     <tbody>
-    {% for k, v in segments.items %}
+    {% for v in segments %}
       <tr>
         <td><a href="https://www.strava.com/segments/{{ v.segment_id }}?filter=following">{{ v.segment_name }}</a></td>
-        <td>{{ v.challenger_name|truncatewords:3 }}</td>
-        <td>{{ v.time_difference }}</td>
-        <td><a href="https://www.strava.com/activities/{{ v.their_pr_id }}">{{ v.their_elapsed_time }}</a></td>
-        <td><a href="https://www.strava.com/activities/{{ v.my_pr_id }}">{{ v.my_elapsed_time }}</a></td>
-        <td>{{ v.distance }}</td>
+        <td>{{ v.their_name|truncatewords:3 }}</td>
+        <td>{{ v.difference }}</td>
+        <td><a href="https://www.strava.com/activities/{{ v.their_pr }}">{{ v.their_time }}</a></td>
+        <td><a href="https://www.strava.com/activities/{{ v.my_pr }}">{{ v.my_time }}</a></td>
+        <td>{{ v.segment_distance }}</td>
       </tr>
     {% endfor %}
     </tbody>

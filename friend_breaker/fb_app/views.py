@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from stravalib import Client
 from stravalib import unithelper
 
-from models import Athlete, ChallengedSegment
+from models import Athlete, Activity, ChallengedSegment
 
 
 def index(request):
@@ -32,15 +32,17 @@ def index(request):
         request.session['athlete_id'] = athlete.id
         request.session['firstname'] = athlete.firstname
 
-        # start saving to a db!
-        new_athlete = Athlete()
-        new_athlete.strava_id = athlete.id
-        new_athlete.first_name = athlete.firstname
-        new_athlete.last_name = athlete.lastname
-        new_athlete.city = athlete.city
-        new_athlete.state = athlete.state
-        new_athlete.country = athlete.country
-        new_athlete.save()
+        try:
+            Athlete.objects.get(strava_id=athlete.id)
+        except Athlete.DoesNotExist:
+            new_athlete = Athlete()
+            new_athlete.strava_id = athlete.id
+            new_athlete.first_name = athlete.firstname
+            new_athlete.last_name = athlete.lastname
+            new_athlete.city = athlete.city
+            new_athlete.state = athlete.state
+            new_athlete.country = athlete.country
+            new_athlete.save()
 
     return render(request, 'welcome_landing.html')
 
@@ -51,10 +53,19 @@ def _build_context(client, athlete_id):
     mysegments = {}  # all segments a user has ridden
 
     # get athlete activities
-    activities = client.get_activities(limit=1)  # API call
+    activities = client.get_activities(limit=5)  # API call
 
     # per activity, get segment efforts
     for activity in activities:
+        try:
+            # if activity already exists in db, skip it
+            Activity.objects.get(strava_id=activity.id)
+            continue
+        except Activity.DoesNotExist:
+            new_activity = Activity()
+            new_activity.strava_id = activity.id
+            new_activity.save()
+
         segment_efforts = client.get_activity(activity.id).segment_efforts   # API call
 
         # per segment effort
@@ -103,8 +114,11 @@ def _build_context(client, athlete_id):
                 segments[segment.name]['time_difference'] = str(me.elapsed_time - other.elapsed_time)
                 segments[segment.name]['distance'] = str(unithelper.miles(segment.distance))
 
-                # start saving to db instead
-                new_segment = ChallengedSegment()
+                try:
+                    new_segment = ChallengedSegment.objects.get(my_id=athlete_id, segment_id=segment.id)
+                except ChallengedSegment.DoesNotExist:
+                    new_segment = ChallengedSegment()
+
                 new_segment.my_id = athlete_id
                 new_segment.their_id = other.athlete_id
                 new_segment.their_name = other.athlete_name
@@ -149,6 +163,15 @@ def update(request):
 
     context = _build_context(client, athlete_id)
 
+    # return render(request, 'index_loggedin.html', context)
+    return redirect(challenged_segments, athlete=athlete_id)
+
+
+def challenged_segments(request, athlete):
+    segments = ChallengedSegment.objects.filter(my_id=athlete)
+
+    context = {}
+    context['segments'] = segments
     return render(request, 'index_loggedin.html', context)
 
 
