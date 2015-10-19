@@ -53,6 +53,7 @@ def _build_context(client, athlete_id):
     mysegments = {}  # all segments a user has ridden
 
     # get athlete activities
+    athlete_from_db = Athlete.objects.get(strava_id=athlete_id)
     activities = client.get_activities(limit=5)  # API call
 
     # per activity, get segment efforts
@@ -64,7 +65,16 @@ def _build_context(client, athlete_id):
         except Activity.DoesNotExist:
             new_activity = Activity()
             new_activity.strava_id = activity.id
+            new_activity.start_lat = activity.start_latitude
+            new_activity.start_long = activity.start_longitude
             new_activity.save()
+
+            # update users 'home' location estimate
+            # move somewhere else, run after a user has x rides loaded (initial case of loading initial ride is not accounted for currently)
+            # athlete_from_db.home_coord_count += 1
+            # athlete_from_db.home_lat = (athlete_from_db.home_lat + activity.start_latitude) / athlete_from_db.home_coord_count
+            # athlete_from_db.home_long = (athlete_from_db.home_long + activity.start_longitude) / athlete_from_db.home_coord_count
+            # athlete_from_db.save()
 
         segment_efforts = client.get_activity(activity.id).segment_efforts   # API call
 

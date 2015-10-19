@@ -18,9 +18,9 @@ class Athlete(models.Model):
     # Determine users 'home' location by taking the average of all
     # activity start lat/longs.
     # This will be used to sort ChallengedSegments by distance from the user.
-    start_lat_est = models.FloatField(blank=True, null=True)
-    start_long_est = models.FloatField(blank=True, null=True)
-    start_count = models.IntegerField(blank=True, null=True)
+    home_lat = models.FloatField(blank=True, null=True)
+    homt_long = models.FloatField(blank=True, null=True)
+    home_coord_count = models.IntegerField(default=0)
 
 
 # future ideas
