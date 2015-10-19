@@ -58,6 +58,9 @@ def _build_context(client, athlete_id):
 
     # per activity, get segment efforts
     for activity in activities:
+        if activity.type not in ['Ride', 'ride']:
+            continue
+
         try:
             # if activity already exists in db, skip it
             Activity.objects.get(strava_id=activity.id)
