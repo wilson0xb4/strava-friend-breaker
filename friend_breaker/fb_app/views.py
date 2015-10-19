@@ -54,7 +54,7 @@ def _build_context(client, athlete_id):
 
     # get athlete activities
     athlete_from_db = Athlete.objects.get(strava_id=athlete_id)
-    activities = client.get_activities(limit=5)  # API call
+    activities = client.get_activities(limit=5, before=athlete_from_db.oldest_activity_date)  # API call
 
     # per activity, get segment efforts
     for activity in activities:
@@ -67,14 +67,26 @@ def _build_context(client, athlete_id):
             new_activity.strava_id = activity.id
             new_activity.start_lat = activity.start_latitude
             new_activity.start_long = activity.start_longitude
+            new_activity.start_date = activity.start_date
             new_activity.save()
+
+            # update newest / oldest activity dates
+            if athlete_from_db.newest_activity_date is None:
+                athlete_from_db.newest_activity_date = activity.start_date
+                athlete_from_db.oldest_activity_date = activity.start_date
+            else:
+                if activity.start_date > athlete_from_db.newest_activity_date:
+                    athlete_from_db.newest_activity_date = activity.start_date
+                elif activity.start_date < athlete_from_db.oldest_activity_date:
+                    athlete_from_db.oldest_activity_date = activity.start_date
 
             # update users 'home' location estimate
             # move somewhere else, run after a user has x rides loaded (initial case of loading initial ride is not accounted for currently)
             # athlete_from_db.home_coord_count += 1
             # athlete_from_db.home_lat = (athlete_from_db.home_lat + activity.start_latitude) / athlete_from_db.home_coord_count
             # athlete_from_db.home_long = (athlete_from_db.home_long + activity.start_longitude) / athlete_from_db.home_coord_count
-            # athlete_from_db.save()
+
+            athlete_from_db.save()
 
         segment_efforts = client.get_activity(activity.id).segment_efforts   # API call
 

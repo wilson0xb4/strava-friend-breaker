@@ -12,8 +12,8 @@ class Athlete(models.Model):
     country = models.CharField(max_length=50)
 
     # strava time strings
-    newest_activity_date = models.CharField(max_length=20, blank=True, null=True)
-    oldest_activity_date = models.CharField(max_length=20, blank=True, null=True)
+    newest_activity_date = models.DateTimeField(blank=True, null=True)
+    oldest_activity_date = models.DateTimeField(blank=True, null=True)
 
     # Determine users 'home' location by taking the average of all
     # activity start lat/longs.
@@ -29,6 +29,7 @@ class Activity(models.Model):
     strava_id = models.IntegerField(primary_key=True)
     start_lat = models.FloatField(blank=True, null=True)
     start_long = models.FloatField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=True, null=True)
     # name = models.CharField(max_length=200)
     # distance = models.CharField(max_length=10)
     # average_speed
