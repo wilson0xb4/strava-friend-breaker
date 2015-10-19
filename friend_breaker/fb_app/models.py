@@ -53,9 +53,9 @@ class ChallengedSegment(models.Model):
     my_pr = models.IntegerField()
     their_pr = models.IntegerField()
 
-    my_time = models.CharField(max_length=8)
-    their_time = models.CharField(max_length=8)
-    difference = models.CharField(max_length=8)
+    my_time = models.CharField(max_length=15)
+    their_time = models.CharField(max_length=15)
+    difference = models.CharField(max_length=15)
 
     segment_id = models.IntegerField()
     segment_name = models.CharField(max_length=200)
