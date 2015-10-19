@@ -30,15 +30,6 @@ class Activity(models.Model):
     start_lat = models.FloatField(blank=True, null=True)
     start_long = models.FloatField(blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
-    # name = models.CharField(max_length=200)
-    # distance = models.CharField(max_length=10)
-    # average_speed
-# class Segment(models.Model):
-#     strava_id = models.IntegerField(primary_key=True)
-#     name = models.CharField(max_length=50)
-#     start_latlng
-#     end_latlng
-#     distance
 
 
 class ChallengedSegment(models.Model):

@@ -4,9 +4,8 @@ import os
 
 from django.shortcuts import render, redirect
 from stravalib import Client
-from stravalib import unithelper
 
-from models import Athlete, Activity, ChallengedSegment
+from models import Athlete, ChallengedSegment
 from tasks import massive_test
 
 
@@ -48,134 +47,9 @@ def index(request):
     return render(request, 'welcome_landing.html')
 
 
-def _build_context(client, athlete_id):
-    context = {}
-    segments = {}  # segments with with a faster friend
-    mysegments = {}  # all segments a user has ridden
-
-    # get athlete activities
-    athlete_from_db = Athlete.objects.get(strava_id=athlete_id)
-    activities = client.get_activities(limit=5, before=athlete_from_db.oldest_activity_date)  # API call
-
-    # per activity, get segment efforts
-    for activity in activities:
-        if activity.type not in ['Ride', 'ride']:
-            continue
-
-        try:
-            # if activity already exists in db, skip it
-            Activity.objects.get(strava_id=activity.id)
-            continue
-        except Activity.DoesNotExist:
-            new_activity = Activity()
-            new_activity.strava_id = activity.id
-            new_activity.start_lat = activity.start_latitude
-            new_activity.start_long = activity.start_longitude
-            new_activity.start_date = activity.start_date
-            new_activity.save()
-
-            # update newest / oldest activity dates
-            if athlete_from_db.newest_activity_date is None:
-                athlete_from_db.newest_activity_date = activity.start_date
-                athlete_from_db.oldest_activity_date = activity.start_date
-            else:
-                if activity.start_date > athlete_from_db.newest_activity_date:
-                    athlete_from_db.newest_activity_date = activity.start_date
-                elif activity.start_date < athlete_from_db.oldest_activity_date:
-                    athlete_from_db.oldest_activity_date = activity.start_date
-
-            # update users 'home' location estimate
-            # move somewhere else, run after a user has x rides loaded (initial case of loading initial ride is not accounted for currently)
-            # athlete_from_db.home_coord_count += 1
-            # athlete_from_db.home_lat = (athlete_from_db.home_lat + activity.start_latitude) / athlete_from_db.home_coord_count
-            # athlete_from_db.home_long = (athlete_from_db.home_long + activity.start_longitude) / athlete_from_db.home_coord_count
-
-            athlete_from_db.save()
-
-        segment_efforts = client.get_activity(activity.id).segment_efforts   # API call
-
-        # per segment effort
-        for segment in segment_efforts:
-            mysegments[segment.segment.id] = segment.segment  # save to db
-
-    # count = 0  # for testing, limit segments
-
-    # check if segment leaderboard contains any friends
-    for key, segment in mysegments.iteritems():
-        leaderboard = client.get_segment_leaderboard(key, following=True).entries   # API call (possibly lots, depends on number of segments)
-
-        # limit the segments while testing
-        # count += 1
-        # if count > 10:
-        #     break
-
-        # get friend with time < athlete time
-        for i, entry in enumerate(leaderboard):
-            if entry.athlete_id == athlete_id:
-                me = entry
-
-                if i == 0:
-                    # I'm already the winner!
-                    break
-
-                j = 1
-                while j <= i and leaderboard[i - j].elapsed_time == me.elapsed_time:
-                    # check for ties, compare each entry from i to zero (possibly)
-                    j += 1
-                if leaderboard[i - j].elapsed_time == me.elapsed_time:
-                    # if they're still tied at the end of the loop, I don't want to see it
-                    break
-
-                other = leaderboard[i - j]
-
-                segments[segment.name] = {}
-                segments[segment.name]['segment_name'] = segment.name
-                segments[segment.name]['segment_id'] = segment.id
-                segments[segment.name]['challenger_name'] = other.athlete_name
-                segments[segment.name]['challenger_id'] = other.athlete_id
-                segments[segment.name]['my_pr_id'] = me.activity_id
-                segments[segment.name]['their_pr_id'] = other.activity_id
-                segments[segment.name]['my_elapsed_time'] = str(me.elapsed_time)
-                segments[segment.name]['their_elapsed_time'] = str(other.elapsed_time)
-                segments[segment.name]['time_difference'] = str(me.elapsed_time - other.elapsed_time)
-                segments[segment.name]['distance'] = str(unithelper.miles(segment.distance))
-
-                try:
-                    new_segment = ChallengedSegment.objects.get(my_id=athlete_id, segment_id=segment.id)
-                except ChallengedSegment.DoesNotExist:
-                    new_segment = ChallengedSegment()
-
-                new_segment.my_id = athlete_id
-                new_segment.their_id = other.athlete_id
-                new_segment.their_name = other.athlete_name
-
-                new_segment.my_pr = me.activity_id
-                new_segment.their_pr = other.activity_id
-
-                new_segment.my_time = str(me.elapsed_time)
-                new_segment.their_time = str(other.elapsed_time)
-                new_segment.difference = str(me.elapsed_time - other.elapsed_time)
-
-                new_segment.segment_id = segment.id
-                new_segment.segment_name = segment.name
-                new_segment.segment_distance = str(unithelper.miles(segment.distance))
-                new_segment.save()
-
-                break  # we already found my entry, why keep looking through the list?
-
-    context['segments'] = segments
-    return context
-
-
 def update(request):
     '''
-    Kickoff the update process!
-
-    Initially:
-        grab most recent ride and look at those segments.
-    Eventually...
-        Starts the background process that will analyze every ride and
-        every segment a user has ridden.
+    Kickoff the update process! (using celery)
     '''
 
     # check that I have both an `access_token` and an `athlete_id`
