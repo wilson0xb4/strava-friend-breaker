@@ -47,6 +47,7 @@ INSTALLED_APPS = (
 
     # external packages
     'bootstrap3',
+    'djcelery',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -113,3 +114,7 @@ BOOTSTRAP3 = {
     # The complete URL to the Bootstrap CSS file (None means no theme)
     'theme_url': os.path.join(STATIC_URL, 'css', 'style.css'),
 }
+
+
+# Celery
+CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'

@@ -7,6 +7,7 @@ from stravalib import Client
 from stravalib import unithelper
 
 from models import Athlete, Activity, ChallengedSegment
+from tasks import massive_test
 
 
 def index(request):
@@ -183,12 +184,13 @@ def update(request):
         # could redirect 401 or 403 instead...but just put them at the home page
         return redirect(index)
 
-    client = Client(access_token=request.session.get('access_token', None))
+    # client = Client(access_token=request.session.get('access_token', None))
+    access_token = request.session.get('access_token', None)
     athlete_id = request.session.get('athlete_id', None)
 
-    context = _build_context(client, athlete_id)
+    # context = _build_context(client, athlete_id)
+    massive_test.delay(access_token, athlete_id)
 
-    # return render(request, 'index_loggedin.html', context)
     return redirect(challenged_segments, athlete=athlete_id)
 
 

@@ -1,7 +1,13 @@
+amqp==1.4.7
+anyjson==0.3.3
 beautifulsoup4==4.4.0
+billiard==3.3.0.20
+celery==3.1.18
 dj-database-url==0.3.0
 Django==1.8.4
 django-bootstrap3==6.2.2
+django-celery==3.1.17
+kombu==3.0.28
 psycopg2==2.6.1
 python-dateutil==1.5
 pytz==2015.4
