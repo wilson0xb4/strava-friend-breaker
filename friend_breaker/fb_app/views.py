@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from __future__ import print_function
 import os
 
+from django.conf import settings
 from django.shortcuts import render, redirect
 from stravalib import Client
 
@@ -16,7 +17,8 @@ def index(request):
         client = Client()
         url = client.authorization_url(
             client_id=os.environ.get('STRAVA_CLIENT_ID', None),
-            redirect_uri='http://127.0.0.1:8000/authorization'
+            redirect_uri=settings.ALLOWED_HOSTS[0] + '/authorization'
+            # redirect_uri='http://127.0.0.1:8000/authorization'
         )
         context = {'auth_url': url}
         return render(request, 'index.html', context)
