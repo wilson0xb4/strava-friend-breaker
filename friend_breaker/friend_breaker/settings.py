@@ -125,4 +125,3 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 3600,
 }
 BROKER_TRANSPORT_OPTIONS['queue_name_prefix'] = 'sfb-'
-CELERY_SEND_TASK_ERROR_EMAILS = True
