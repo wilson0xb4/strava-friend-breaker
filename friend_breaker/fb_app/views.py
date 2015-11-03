@@ -17,7 +17,7 @@ def index(request):
         client = Client()
         url = client.authorization_url(
             client_id=os.environ.get('STRAVA_CLIENT_ID', None),
-            redirect_uri=settings.ALLOWED_HOSTS[0] + '/authorization'
+            redirect_uri='http://' + settings.ALLOWED_HOSTS[0] + '/authorization'
             # redirect_uri='http://127.0.0.1:8000/authorization'
         )
         context = {'auth_url': url}
