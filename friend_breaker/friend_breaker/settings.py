@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'friend_breaker.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://localhost:5432/friend_breaker'
+        default='sqlite:////' + BASE_DIR + '.sqlite'
     )
 }
 
@@ -118,3 +118,11 @@ BOOTSTRAP3 = {
 
 # Celery
 CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
+BROKER_URL = 'sqs://'
+BROKER_TRANSPORT_OPTIONS = {
+    'region': 'us-west-2',
+    'polling_interval': 3,
+    'visibility_timeout': 3600,
+}
+BROKER_TRANSPORT_OPTIONS['queue_name_prefix'] = 'sfb-'
+CELERY_SEND_TASK_ERROR_EMAILS = True
