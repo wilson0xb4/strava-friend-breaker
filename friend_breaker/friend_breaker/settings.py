@@ -118,10 +118,11 @@ BOOTSTRAP3 = {
 
 # Celery
 CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
-BROKER_URL = 'sqs://'
-BROKER_TRANSPORT_OPTIONS = {
-    'region': 'us-west-2',
-    'polling_interval': 3,
-    'visibility_timeout': 3600,
-}
-BROKER_TRANSPORT_OPTIONS['queue_name_prefix'] = 'sfb-'
+# CELERY_ACCEPT_CONTENT = ['json']
+# BROKER_URL = 'sqs://'
+# BROKER_TRANSPORT_OPTIONS = {
+#     'region': 'us-west-2',
+#     'polling_interval': 3,
+#     'visibility_timeout': 3600,
+# }
+# BROKER_TRANSPORT_OPTIONS['queue_name_prefix'] = 'sfb-'

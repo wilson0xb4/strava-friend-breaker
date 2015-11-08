@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from stravalib import Client
 
 from models import Athlete, ChallengedSegment
-from tasks import massive_test
+from tasks import get_segments_from_activities
 
 
 def index(request):
@@ -65,7 +65,7 @@ def update(request):
     athlete_id = request.session.get('athlete_id', None)
 
     # context = _build_context(client, athlete_id)
-    massive_test.delay(access_token, athlete_id)
+    get_segments_from_activities.delay(access_token, athlete_id)
 
     return redirect(challenged_segments, athlete=athlete_id)
 
